@@ -32,8 +32,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $DOCKER_USERNAME/github-actions-infisical:latest .
+          docker build -t $DOCKER_USERNAME/github-actions-infisical:latest .${{ github.run_number }} .
 
       - name: Push Docker image
         run: |
-          docker push $DOCKER_USERNAME/github-actions-infisical:latest
+          docker push $DOCKER_USERNAME/github-actions-infisical:${{ github.run_number }}
