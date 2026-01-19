@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Authenticate with Infisical via OIDC and fetch secrets
         uses: Infisical/secrets-action@v1.0.9
         with:
@@ -21,8 +24,16 @@ jobs:
           project-slug: "github-actions-infisical-63-hs"
           env-slug: "dev"
 
-      - name: Use DATABASE_URL secret
+      - name: Log in to Docker Hub
         run: |
-          echo "DATABASE_URL is set"
-          echo "Extracted host:"
-          echo "$DATABASE_URL" | sed -E 's|.*@([^:/]+).*|\1|'
+          echo "$DOCKER_PASSWORD" | docker login \
+            -u "$DOCKER_USERNAME" \
+            --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t $DOCKER_USERNAME/github-actions-infisical:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push $DOCKER_USERNAME/github-actions-infisical:latest
